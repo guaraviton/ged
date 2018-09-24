@@ -1,0 +1,5 @@
+instalar node
+instalar servidor
+	npm install -g browser-sync
+no diretorio do projeto
+	browser-sync start -s -f . --port 9000

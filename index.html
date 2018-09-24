@@ -1,0 +1,94 @@
+<html>
+  <head>
+    <!-- stylesheet -->
+    <link href="api/css/literallycanvas.css" rel="stylesheet">
+
+    <!-- dependency: React.js -->
+    <script src="react/react-with-addons.js"></script>
+    <script src="react/react-dom.js"></script>	
+	<script type="text/javascript" src="jquery/jquery.js"></script>
+	
+    <!-- Literally Canvas -->
+    <script src="api/js/literallycanvas.js"></script>
+  </head>
+  <body>
+    <!-- where the widget goes. you can do CSS to it. -->
+    <!-- note: as of 0.4.13, you cannot use 'literally' as the class name.
+         sorry about that. -->
+    <div class="my-drawing"></div>
+	<!--<form class="controls export-bounded">
+		input type="submit" data-action="export-as-png" value="Export as PNG">
+		<input type="submit" data-action="load-as-png" value="Load">
+		<input type="submit" data-action="load-as-png-2" value="Load 2"
+		
+	</form>-->
+	<p>
+	<button onclick="salvarCamada()">Salvar Camada</button>
+	<p>
+	<button onclick="gerarBase64()">Gerar Base64</button>	
+	<div id="camadas">
+	</div>
+	<p>
+	<textarea id="base64" rows="20" cols="200">
+	</textarea>
+	https://codebeautify.org/base64-to-image-converter
+	<p>
+	
+    <!-- kick it off -->
+    <script>
+		var lc;
+		$(document).ready(function() {	
+			var imagemUrl = 'imagem/cad-practice-drawings-91-100-1-638.jpg'
+			var watermarkImage = new Image()
+			watermarkImage.src = imagemUrl;					
+			
+			watermarkImage.onload = function() {
+			  $(".literally").width(this.width + 61);
+			  $(".literally").height(this.height + 31);
+			  
+			  lc.respondToSizeChange();
+			}
+			
+			var backgroundImage = new Image()
+			backgroundImage.src = imagemUrl;
+
+			lc = LC.init(
+				document.getElementsByClassName('my-drawing')[0],
+				{	
+					backgroundShapes: [
+						LC.createShape(
+						  'Image', {image: backgroundImage}),						
+					  ],
+					imageURLPrefix: 'api/img',
+					tools: [LC.tools.Pencil, LC.tools.Eraser, LC.tools.Line,LC.tools.Rectangle, LC.tools.Text, LC.tools.Ellipse, LC.tools.Pan, LC.tools.SelectShape],
+					toolbarPosition: 'top',
+					secondaryColor: 'transparent'
+					//,watermarkImage: watermarkImage
+				}
+			);															
+		});
+		var indexCamada = 0;
+		var camadas = [];
+		function resgatarCamada(index){
+			lc.loadSnapshot(JSON.parse(camadas[index]));
+		}		
+		function salvarCamada(){
+			camadas.push(JSON.stringify(lc.getSnapshot()));	
+			var pularLinha = $('<p/>');
+			var salvarCamada = $('<button/>',{
+				text: 'Exibir Camada' + indexCamada,
+				camadaIndex: indexCamada, 
+				click: function () {
+					resgatarCamada($(this).attr('camadaIndex')); 
+				}
+			});
+			indexCamada++;
+			$("#camadas").append(pularLinha);
+			$("#camadas").append(salvarCamada);			
+		};
+		function gerarBase64(){
+			$("#base64").text(lc.canvasForExport().toDataURL());
+		};
+    </script>
+  </body>
+</html>
